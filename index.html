@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+      .valid {
+        background: green;
+      }
+
+      .invalid {
+        background: red;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="handleStart()">Start</button>
+    <div class="text-list"
+         style="display: flex;
+                white-space: pre-wrap;"></div>
+    <input type="textbox"
+           class="text-input"
+           style="opacity: 0;"
+           oninput="handleInputChange(event)"
+           onkeydown="handleInputKeyDown(event)"/>
+
+    <div style="display: flex; flex-direction: column">
+      Time Taken:
+      <p class="timeTaken"></p>
+      Words Per Min:
+      <p class="wordsPerMin"></p>
+      No of mistakes:
+      <p class="noOfMistakes"></p>
+    </div>
+  </body>
+
+  <script>
+    const str = 'Lorem ipsum dolor sit,'
+    let index = 0;
+    let timer = 0;
+    let timerFn = null;
+    
+    let startTime = 0;
+    let endTime = 0;
+    
+    let timeTaken = 0;
+    let wordsPerMin = 0;
+    let noOfMistakes = 0;
+    
+    for (let i = 0; i < str.length; i++) {
+      const p = document.createElement('p');
+      p.textContent = str[i];
+      p.setAttribute('id', `char-${i}`);
+      document.querySelector('.text-list').appendChild(p);
+    }
+    
+    
+    const handleInputChange = (event) => {
+      const char = event.target.value;
+      if (str[index] === char[char.length - 1]) {
+        document.querySelector(`.text-list p#char-${index}`).classList.add('valid');
+      } else {
+        document.querySelector(`.text-list p#char-${index}`).classList.add('invalid');
+      }
+      index++;
+    
+      if (index >= str.length) {
+        endTime = Date.now();
+        timeTaken = Math.floor((endTime - startTime) / 1000);
+        wordsPerMin = str.split(' ').length / timeTaken * 60;
+        noOfMistakes = document.querySelectorAll('.text-list p.invalid').length;
+    
+        document.querySelector('.timeTaken').textContent = timeTaken;
+        document.querySelector('.wordsPerMin').textContent = wordsPerMin;
+        document.querySelector('.noOfMistakes').textContent = noOfMistakes;
+      }
+    }
+    
+    const handleInputKeyDown = (event) => {
+      const key = event.keyCode || event.charCode;
+      if (key == 8 || key == 46) {
+        const currentIndex = index - 1;
+        console.log(currentIndex);
+        document.querySelector(`.text-list p#char-${currentIndex}`).classList.remove('invalid');
+        document.querySelector(`.text-list p#char-${currentIndex}`).classList.remove('valid');
+        index = currentIndex - 1;
+      }
+    }
+    
+    const handleStart = () => {
+      document.querySelector('.text-input').focus();
+      startTime = Date.now();
+    }
+  </script>
+</html>
